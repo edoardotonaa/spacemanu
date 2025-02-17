@@ -3,6 +3,29 @@
 <head>
   <base target="_top">
   <script>
+    <button id="aggiungiRiparazione">Aggiungi Riparazione</button>
+
+<script>
+document.getElementById("aggiungiRiparazione").addEventListener("click", function() {
+    const url = "https://script.google.com/macros/s/TUO_SCRIPT_ID/exec"; // Cambia con il tuo URL
+
+    const data = {
+        targa: "AB123CD",
+        descrizione: "Cambio olio",
+        dataRiparazione: "17/02/2025"
+    };
+
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => alert(result.message)) // Mostra un messaggio di conferma
+    .catch(error => console.error("Errore:", error));
+});
+</script>
+
     function toggleMenu() {
       var menu = document.getElementById("menuRiparazioni");
       menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "grid" : "none";
