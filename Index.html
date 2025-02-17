@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <script>
+    function toggleMenu() {
+      var menu = document.getElementById("menuRiparazioni");
+      menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "grid" : "none";
+    }
+
+    function toggleSelection(btn) {
+      btn.classList.toggle("selected");
+      var numpad = document.getElementById("quantita-" + btn.dataset.value);
+      numpad.style.display = btn.classList.contains("selected") ? "inline-block" : "none";
+    }
+
+    function aggiungiRiparazione() {
+      var targa = document.getElementById("targa").value;
+      var data = document.getElementById("dataRiparazione").value;
+      var riparazioni = [];
+
+      document.querySelectorAll(".btn-riparazione.selected").forEach(btn => {
+        var valore = btn.getAttribute("data-value");
+        var quantita = document.getElementById("quantita-" + valore).value || "1";
+        riparazioni.push(valore + " (x" + quantita + ")");
+      });
+
+      if (targa === "" || data === "") {
+        alert("⚠️ Inserisci la targa e la data!");
+        return;
+      }
+
+      if (riparazioni.length === 0) {
+        alert("⚠️ Seleziona almeno una riparazione!");
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          alert(response);
+          document.getElementById("targa").value = "";
+          document.getElementById("dataRiparazione").value = ""; 
+          document.querySelectorAll(".btn-riparazione.selected").forEach(btn => btn.classList.remove("selected"));
+          document.querySelectorAll(".quantita-input").forEach(input => input.style.display = "none");
+        })
+        .aggiungiRiparazione(targa, riparazioni.join(", "), data);
+    }
+    function cercaUltimaRiparazione() {
+  var targa = document.getElementById("cercaTarga").value;
+  if (targa === "") {
+    alert("⚠️ Inserisci una targa!");
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(response) {
+      if (response) {
+        document.getElementById("ultimaRiparazione").innerHTML = 
+          "🛠️ Ultima riparazione: " + response;
+      } else {
+        document.getElementById("ultimaRiparazione").innerHTML = 
+          "❌ Nessuna riparazione trovata per questa targa.";
+      }
+    })
+    .trovaUltimaRiparazione(targa);
+}
+
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 600px;
+      margin: auto;
+    }
+    .btn-menu {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .btn-riparazione {
+      background-color: #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    .btn-riparazione:hover {
+      background-color: #ccc;
+    }
+    .btn-riparazione.selected {
+      background-color: #28a745;
+      color: white;
+    }
+    .menu-container {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+    }
+    .quantita-input {
+      width: 50px;
+      display: none;
+      text-align: center;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔧 Gestione Riparazioni 🔧</h2>
+
+    <h3>➕ Aggiungi una nuova riparazione</h3>
+    <label>🚛 Targa:</label>
+    <input type="text" id="targa"><br><br>
+
+    <label>📅 Data riparazione:</label>
+    <input type="date" id="dataRiparazione"><br><br>
+
+    <label>🔧 Seleziona riparazione:</label>
+    <button class="btn-menu" onclick="toggleMenu()">🛠️ Apri menu</button>
+
+    <div id="menuRiparazioni" class="menu-container">
+      <!-- Voci di riparazione -->
+      <button class="btn-riparazione" data-value="Telo" onclick="toggleSelection(this)">Telo</button>
+      <input type="number" id="quantita-Telo" class="quantita-input" min="1" value="1">
+      
+      <button class="btn-riparazione" data-value="Tetto" onclick="toggleSelection(this)">Tetto</button>
+      <input type="number" id="quantita-Tetto" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Asta Tenditelo" onclick="toggleSelection(this)">Asta Tenditelo</button>
+      <input type="number" id="quantita-Asta Tenditelo" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Gomme" onclick="toggleSelection(this)">Gomme</button>
+      <input type="number" id="quantita-Gomme" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Freni" onclick="toggleSelection(this)">Freni</button>
+      <input type="number" id="quantita-Freni" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Pinze" onclick="toggleSelection(this)">Pinze</button>
+      <input type="number" id="quantita-Pinze" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Torpless" onclick="toggleSelection(this)">Torpless</button>
+      <input type="number" id="quantita-Torpless" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Pastiglie" onclick="toggleSelection(this)">Pastiglie</button>
+      <input type="number" id="quantita-Pastiglie" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Record" onclick="toggleSelection(this)">Record</button>
+      <input type="number" id="quantita-Record" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Alza/Abbassa" onclick="toggleSelection(this)">Alza/Abbassa</button>
+      <input type="number" id="quantita-Alza/Abbassa" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Fanali" onclick="toggleSelection(this)">Fanali</button>
+      <input type="number" id="quantita-Fanali" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Pistoni" onclick="toggleSelection(this)">Pistoni</button>
+      <input type="number" id="quantita-Pistoni" class="quantita-input" min="1" value="1">
+
+      <button class="btn-riparazione" data-value="Piantoni" onclick="toggleSelection(this)">Piantoni</button>
+      <input type="number" id="quantita-Piantoni" class="quantita-input" min="1" value="1">
+    </div>
+
+    <button onclick="aggiungiRiparazione()">✅ Invia Riparazione</button>
+    
+    <hr>
+
+    <label>🛠️ Ultima Riparazione:<h3>
+    <input type="text" id="cercaTarga">
+    <button onclick="cercaUltimaRiparazione()">🔎 Cerca</button>
+    <p id="ultimaRiparazione"></p>
+
+
+
+  </div>
+  
+</body>
+</html>
