@@ -58,16 +58,8 @@ document.getElementById("aggiungiRiparazione").addEventListener("click", functio
         return;
       }
 
-      google.script.run
-        .withSuccessHandler(function(response) {
-          alert(response);
-          document.getElementById("targa").value = "";
-          document.getElementById("dataRiparazione").value = ""; 
-          document.querySelectorAll(".btn-riparazione.selected").forEach(btn => btn.classList.remove("selected"));
-          document.querySelectorAll(".quantita-input").forEach(input => input.style.display = "none");
-        })
-        .aggiungiRiparazione(targa, riparazioni.join(", "), data);
-    }
+    
+    
     function cercaUltimaRiparazione() {
   var targa = document.getElementById("cercaTarga").value;
   if (targa === "") {
